@@ -1,0 +1,79 @@
+<!-- create_aspirant_profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Aspirant Profile</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.add-formset').click(function(e) {
+                e.preventDefault();
+                var formCount = parseInt($('#id_' + $(this).data('formset-prefix') + '-TOTAL_FORMS').val());
+                var newForm = $('#empty_' + $(this).data('formset-prefix')).html().replace(/__prefix__/g, formCount);
+                $(this).before(newForm);
+                $('#id_' + $(this).data('formset-prefix') + '-TOTAL_FORMS').val(formCount + 1);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Create Aspirant Profile</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ aspirant_profile_form.as_p }}
+        <h2>Work History</h2>
+        {{ work_history_formset.management_form }}
+        <div id="work_history-formset">
+            {% for work_history_form in work_history_formset %}
+                {{ work_history_form.as_table }}
+            {% endfor %}
+            <div id="empty_work_history" style="display: none;">
+                {{ work_history_formset.empty_form.as_table }}
+            </div>
+        </div>
+        <button type="button" class="add-formset" data-formset-prefix="work_history">Add Work History</button>
+        
+        <h2>Side Projects</h2>
+        {{ side_project_formset.management_form }}
+        <div id="side_project-formset">
+            {% for side_project_form in side_project_formset %}
+                {{ side_project_form.as_table }}
+            {% endfor %}
+            <div id="empty_side_project" style="display: none;">
+                {{ side_project_formset.empty_form.as_table }}
+            </div>
+        </div>
+        <button type="button" class="add-formset" data-formset-prefix="side_project">Add Side Project</button>
+        
+        <h2>Education</h2>
+        {{ education_formset.management_form }}
+        <div id="education-formset">
+            {% for education_form in education_formset %}
+                {{ education_form.as_table }}
+            {% endfor %}
+            <div id="empty_education" style="display: none;">
+                {{ education_formset.empty_form.as_table }}
+            </div>
+        </div>
+        <button type="button" class="add-formset" data-formset-prefix="education">Add Education</button>
+
+        <h2>Certifications</h2>
+        {{ certification_formset.management_form }}
+        <div id="certification-formset">
+            {% for certification_form in certification_formset %}
+                {{ certification_form.as_table }}
+            {% endfor %}
+            <div id="empty_certification" style="display: none;">
+                {{ certification_formset.empty_form.as_table }}
+            </div>
+        </div>
+        <button type="button" class="add-formset" data-formset-prefix="certification">Add Certification</button>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

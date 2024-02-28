@@ -1,0 +1,86 @@
+<!-- aspirant_resume.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aspirant Resume</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .resume-section {
+            margin-bottom: 20px;
+        }
+        .resume-section h2 {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .resume-section p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aspirant Resume</h1>
+
+    <div class="resume-section">
+        <h2>Personal Information</h2>
+        <p><strong>Name:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <!-- Add other personal information fields here -->
+    </div>
+
+    <div class="resume-section">
+        <h2>Skills</h2>
+        {% for skill in skills %}
+            <p><strong>{{ forloop.counter }}:</strong> {{ skill }}</p>
+        {% endfor %}
+    </div>
+
+    <div class="resume-section">
+        <h2>Work History</h2>
+        {% for work_history in work_history_list %}
+        {{ forloop.counter }}
+            <p><strong>Position:</strong> {{ work_history.job_title }}</p>
+            <p><strong>Company:</strong> {{ work_history.company }}</p>
+            <p><strong>Duration:</strong> {{ work_history.duration }}</p>
+            <!-- Add other work history fields here -->
+        {% endfor %}
+    </div>
+
+    <div class="resume-section">
+        <h2>Side Projects</h2>
+        {% for side_project in side_project_list %}
+        {{ forloop.counter }}
+            <p><strong>Project Name:</strong> {{ side_project.project_title }}</p>
+            <p><strong>Github Link:</strong> {{ side_project.github_link }}</p>
+            <!-- Add other side project fields here -->
+        {% endfor %}
+    </div>
+
+    <div class="resume-section">
+        <h2>Education</h2>
+        {% for education in education_list %}
+        {{ forloop.counter }}
+            <p><strong>Degree:</strong> {{ education.degree }}</p>
+            <p><strong>Institution:</strong> {{ education.institution }}</p>
+            <p><strong>Duration:</strong> {{ education.duration }}</p>
+            <!-- Add other education fields here -->
+        {% endfor %}
+    </div>
+
+    <div class="resume-section">
+        <h2>Certifications</h2>
+        {% for certification in certification_list %}
+        {{ forloop.counter }}
+            <p><strong>Certification Name:</strong> {{ certification.certification_name }}</p>
+            <p><strong>Year:</strong> {{ certification.year }}</p>
+            <!-- Add other certification fields here -->
+        {% endfor %}
+    </div>
+</body>
+</html>
