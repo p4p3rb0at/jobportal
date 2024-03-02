@@ -1,6 +1,7 @@
 # Create your views here.
 from django.shortcuts import render, redirect
 from django.urls import path, reverse_lazy
+from django.shortcuts import render, get_object_or_404
 from jobs.forms import AspirantSignupForm, EmployerSignupForm, AspirantProfileForm
 from jobs.models import Aspirant,CustomUser
 from django.contrib.auth.views import LoginView
@@ -14,7 +15,7 @@ class AspirantLoginView(LoginView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             # If the user is already authenticated, redirect to a specific view
-            return redirect(reverse_lazy('aspirant_resume'))
+            return redirect(reverse_lazy('aspirant_dashboard'))
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -27,12 +28,12 @@ class EmployerLoginView(LoginView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             # If the user is already authenticated, redirect to a specific view
-            return redirect(reverse_lazy('post_job'))
+            return redirect(reverse_lazy('employer_dashboard'))
         return super().dispatch(request, *args, **kwargs)
     
     def get_success_url(self):
         # Specify the name of the URL pattern you want to redirect to after successful login
-        return reverse_lazy('post_job')
+        return reverse_lazy('employer_dashboard')
 
 def aspirant_signup(request):
     if request.method == 'POST':
@@ -66,16 +67,16 @@ def create_aspirant_profile(request):
     try:
         aspirant = Aspirant.objects.get(user=request.user)
         # If an Aspirant instance exists, redirect to another view
-        return redirect(reverse_lazy('aspirant_resume'))
+        return redirect(reverse_lazy('aspirant_dashboard'))
     except Aspirant.DoesNotExist:
         pass  # If no Aspirant instance exists, proceed with the login process
     if request.method == 'POST':
         aspirant_profile_form = AspirantProfileForm(request.POST)
         print(aspirant_profile_form)
         work_history_formset = WorkHistoryFormSet(request.POST, prefix='work_history')
-        side_project_formset = SideProjectFormSet(request.POST, prefix='side_projects')
+        side_project_formset = SideProjectFormSet(request.POST, prefix='side_project')
         education_formset = EducationFormSet(request.POST, prefix='education')
-        certification_formset = CertificationFormSet(request.POST, prefix='certifications')
+        certification_formset = CertificationFormSet(request.POST, prefix='certification')
 
         if (aspirant_profile_form.is_valid() and work_history_formset.is_valid() and
                 side_project_formset.is_valid() and education_formset.is_valid() and certification_formset.is_valid()):
@@ -100,13 +101,13 @@ def create_aspirant_profile(request):
 
             # Create an instance of Aspirant and associate it with the AspirantProfile
             aspirant, created = Aspirant.objects.get_or_create(user=request.user, profile=aspirant_profile)
-            return redirect('profile_created_successfully')
+            return redirect('aspirant_resume')
     else:
         aspirant_profile_form = AspirantProfileForm()
         work_history_formset = WorkHistoryFormSet(prefix='work_history')
-        side_project_formset = SideProjectFormSet(prefix='side_projects')
+        side_project_formset = SideProjectFormSet(prefix='side_project')
         education_formset = EducationFormSet(prefix='education')
-        certification_formset = CertificationFormSet(prefix='certifications')
+        certification_formset = CertificationFormSet(prefix='certification')
 
     return render(request, 'create_aspirant_profile.html', {
         'aspirant_profile_form': aspirant_profile_form,
@@ -161,7 +162,7 @@ def post_job(request):
             job_posting.save()
             skills_required = form.cleaned_data['skills_required']
             job_posting.skills_required.set(skills_required)
-            return redirect('job_posted_successfully')  # Redirect to a success page
+            return redirect('success')  # Redirect to a success page
     else:
         form = JobPostingForm()
     return render(request, 'post_job.html', {'form': form})
@@ -173,10 +174,68 @@ def aspirant_dashboard(request):
         aspirant = Aspirant.objects.get(user = request.user)
         aspirant_skills = aspirant.profile.skills.all()
         matched_jobs = JobPosting.objects.filter(skills_required__in=aspirant_skills).distinct()
+        applied = JobPosting.objects.filter(applications__aspirant=request.user.aspirant)
         jobs = JobPosting.objects.all()
-        return render(request, 'aspirant_dashboard.html', {'matched_jobs': matched_jobs,'jobs':jobs})
+        return render(request, 'aspirant_dashboard.html', {'matched_jobs': matched_jobs,'jobs':jobs, 'applied':applied })
     else:
         return render(request, 'access_denied.html')  # Redirect to an access denied page
 
+from jobs.models import JobApplication
+from jobs.forms import JobApplicationForm
+
+def job_application(request, job_posting_id):
+    job_posting = JobPosting.objects.get(id=job_posting_id)
+    aspirant = request.user.aspirant
+    if request.method == 'POST':
+        form = JobApplicationForm(request.POST)
+        if form.is_valid() and not JobApplication.objects.filter(job_posting=job_posting, aspirant=aspirant).exists():
+            job_application = form.save(commit=False)
+            
+            job_application.job_posting = job_posting
+            job_application.aspirant = aspirant  # Assuming Aspirant is related to User
+            job_application.save()
+            return redirect('success')  # Redirect to a success page
+    else:
+        form = JobApplicationForm()
+    return render(request, 'job_application.html', {'form': form, 'job_posting': job_posting})
+
+def employer_dashboard(request):
+    if request.user.is_authenticated and hasattr(request.user, 'employer'):
+        employer = request.user.employer
+        job_postings = JobPosting.objects.filter(employer=employer)
+        return render(request, 'employer_dashboard.html', {'job_postings': job_postings})
+    else:
+        return render(request, 'access_denied.html')  # Redirect to an access denied page
+
+def view_applicants(request, job_id):
+    if request.user.is_authenticated and hasattr(request.user, 'employer'):
+        job_posting = get_object_or_404(JobPosting, id=job_id, employer=request.user.employer)
+        applicants = job_posting.applications.all()
+        return render(request, 'view_applicants.html', {'job_posting': job_posting, 'applicants': applicants})
+    else:
+        return render(request, 'access_denied.html')  # Redirect to an access denied page
+
+def view_applicants(request, job_id):
+    if request.user.is_authenticated and hasattr(request.user, 'employer'):
+        job_posting = get_object_or_404(JobPosting, id=job_id, employer=request.user.employer)
+        applicants = job_posting.applications.all()
+        return render(request, 'view_applicants.html', {'job_posting': job_posting, 'applicants': applicants})
+    else:
+        return render(request, 'access_denied.html')  # Redirect to an access denied page
+    
+def shortlist_applicant(request, job_id, applicant_id):
+    if request.user.is_authenticated and hasattr(request.user, 'employer'):
+        job_posting = get_object_or_404(JobPosting, id=job_id, employer=request.user.employer)
+        applicant = get_object_or_404(JobApplication, id=applicant_id, job_posting=job_posting)
+        applicant.is_shortlisted = True
+        applicant.save()
+        return redirect('view_applicants', job_id=job_id)
+    else:
+        return render(request, 'access_denied.html')  # Redirect to an access denied page
+      
 def access_denied(request):
     return render(request,'access_denied.html')
+
+def success(request):
+    return render(request,'success.html')
+

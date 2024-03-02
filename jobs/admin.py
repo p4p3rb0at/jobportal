@@ -6,7 +6,7 @@ from jobs.models import CustomUser, Skill, WorkHistory, SideProject, Education, 
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from .models import CustomUser
+from jobs.models import CustomUser
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
@@ -48,14 +48,7 @@ class CustomUserAdmin(BaseUserAdmin):
 # Register the CustomUser model with the custom UserAdmin
 admin.site.register(CustomUser, CustomUserAdmin)
 class SkillAdmin(admin.ModelAdmin):
-    def save_model(self, request, obj, form, change):
-        if not obj.pk:
-            # New skill instance, check if at least one AspirantProfile is associated
-            if not AspirantProfile.objects.exists():
-                # No AspirantProfile exists, prevent saving
-                self.message_user(request, "Cannot save Skill without associated AspirantProfile", level='ERROR')
-                return
-        super().save_model(request, obj, form, change)
+    pass
 
 admin.site.register(Skill, SkillAdmin)
 class WorkHistoryInline(admin.TabularInline):

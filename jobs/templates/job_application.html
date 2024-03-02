@@ -1,0 +1,21 @@
+<!-- job_application_form.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application</title>
+</head>
+<body>
+    <h1>Job Application</h1>
+    <h2>{{ job_posting.title }}</h2>
+    <h2>{{ job_posting.employer.company_name }}</h2>
+    <h2>{{ job_posting.description }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Application</button>
+    </form>
+</body>
+</html>

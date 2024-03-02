@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Applicants</title>
+</head>
+<body>
+    <h1>Applicants for {{ job_posting.title }}</h1>
+    <ul>
+        {% for applicant in applicants %}
+            <li>
+                {{ applicant.aspirant.user.username }}
+                {{ applicant.aspirant.profile }}
+                
+                {% if applicant.is_shortlisted %}
+                    <span style="color: green;">(Shortlisted)</span>
+                {% endif %}
+                <form action="{% url 'shortlist_applicant' job_posting.id applicant.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Shortlist</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

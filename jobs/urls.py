@@ -12,7 +12,12 @@ urlpatterns = [
     path('aspirant/resume/', views.aspirant_resume, name='aspirant_resume'),
     path('post/job/', views.post_job, name='post_job'),
     path('dashboard/aspirant', views.aspirant_dashboard, name='aspirant_dashboard'),
+    path('apply/<int:job_posting_id>/', views.job_application, name='job_application'),
+    path('dashboard/employer/', views.employer_dashboard, name='employer_dashboard'),
+    path('employer/job/<int:job_id>/applicants/', views.view_applicants, name='view_applicants'),
+    path('employer/job/<int:job_id>/applicant/<int:applicant_id>/shortlist/', views.shortlist_applicant, name='shortlist_applicant'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('access/denied/', views.access_denied, name='access_denied'),
+    path('success/', views.success, name='success'),
     # Add other URL patterns as needed
 ]

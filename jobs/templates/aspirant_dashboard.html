@@ -46,11 +46,34 @@
                     <td>{{ job.description }}</td>
                     <td>{% for skill in job.skills_required.all %} {{ skill }}, {% endfor %}</td>
                     <td>{{ job.created_at }}</td>
-                    <td>{{ job }}</td>
+
+                    {% if job in applied %}
+                    <td><a href="#">Applied</a></td>
+                    {% else %}
+                    <td><a href="{% url 'job_application' job.id %}">Apply Now</a></td>
                     <!-- Add other columns if needed -->
+                    {% endif %}
                 </tr>
             {% endfor %}
-            <tr><td><h2>Other Job Postings</h2></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Other Job Postings</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Employer</th>
+                <th>Description</th>
+                <th>Skills Required</th>
+                <th>Created At</th>
+                <th>Apply</th>
+                <!-- Add other headers if needed -->
+            </tr>
+        </thead>
+        <tbody>
+
             {% for job in jobs %}
             {% if job not in matched_jobs %}
             <tr>
@@ -65,6 +88,7 @@
             </tr>
             {% endif %}
             {% endfor %}
+            
         </tbody>
     </table>
 </body>

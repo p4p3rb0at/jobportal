@@ -102,3 +102,10 @@ class JobPostingForm(forms.ModelForm):
         model = JobPosting
         fields = ['title', 'description', 'skills_required']
 
+from jobs.models import JobApplication
+
+class JobApplicationForm(forms.ModelForm):
+    class Meta:
+        model = JobApplication
+        fields = ['cover_letter']
+
