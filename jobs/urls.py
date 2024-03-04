@@ -2,6 +2,8 @@ from django.urls import path
 from jobs import views
 from django.contrib.auth.views import LogoutView
 
+
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('signup/aspirant/', views.aspirant_signup, name='aspirant_signup'),
