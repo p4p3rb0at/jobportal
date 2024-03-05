@@ -1,18 +1,12 @@
 <!-- employer_dashboard.html -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employer Dashboard</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <h1>Employer Dashboard</h1>
     <ul>
         {% for job_posting in job_postings %}
             <li><a href="{% url 'view_applicants' job_posting.id %}">{{ job_posting.title }}</a></li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}

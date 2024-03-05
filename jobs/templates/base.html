@@ -44,7 +44,20 @@
                   </li>
                 {% elif request.user.is_employer %}
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'post_job' %}">Link</a>
+                  <a class="nav-link" href="{% url 'post_job' %}">Post Job</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Link</a>
+                </li>
+                {% endif %}
+                {% if request.user.is_aspirant %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'aspirant_resume' %}">Profile</a>
+                  </li>
+                {% elif request.user.is_employer %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'posted_jobs' %}">Jobs Posted</a>
                 </li>
                 {% else %}
                 <li class="nav-item">

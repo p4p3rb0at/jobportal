@@ -1,0 +1,15 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posted Jobs</title>
+</head>
+<body>
+    <h1>Posted Jobs</h1>
+    <ul>
+        {% for job_posting in posted_jobs %}
+            <li><a href="{% url 'view_applicants' job_posting.id %}">{{ job_posting.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

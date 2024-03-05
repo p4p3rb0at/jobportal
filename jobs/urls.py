@@ -18,6 +18,7 @@ urlpatterns = [
     path('dashboard/employer/', views.employer_dashboard, name='employer_dashboard'),
     path('employer/job/<int:job_id>/applicants/', views.view_applicants, name='view_applicants'),
     path('employer/job/<int:job_id>/applicant/<int:applicant_id>/shortlist/', views.shortlist_applicant, name='shortlist_applicant'),
+    path('employer/posted/jobs/', views.posted_jobs, name='posted_jobs'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('access/denied/', views.access_denied, name='access_denied'),
     path('success/', views.success, name='success'),

@@ -232,6 +232,14 @@ def shortlist_applicant(request, job_id, applicant_id):
         return redirect('view_applicants', job_id=job_id)
     else:
         return render(request, 'access_denied.html')  # Redirect to an access denied page
+
+def posted_jobs(request):
+    if request.user.is_authenticated and hasattr(request.user, 'employer'):
+        employer = request.user.employer
+        posted_jobs = JobPosting.objects.filter(employer=employer)
+        return render(request, 'posted_jobs.html', {'posted_jobs': posted_jobs})
+    else:
+        return render(request, 'access_denied.html')
       
 def access_denied(request):
     return render(request,'access_denied.html')
